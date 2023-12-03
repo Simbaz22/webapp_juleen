@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="static/css/style.css">
+    <title>IT Quiz</title>
+</head>
+<body>
+    <div class="container">
+        <h1>IT Quiz</h1>
+        <form id="quizForm">
+            {% for question in quiz_data %}
+                <label for="{{ question['id'] }}" aria-label="{{ question['question'] }}">{{ question['question'] }}</label>
+                <select name="{{ question['id'] }}" aria-labelledby="{{ question['id'] }} {{ question['question'] }}">
+                    {% for option in question['options'] %}
+                        <option value="{{ option }}">{{ option }}</option>
+                    {% endfor %}
+                </select>
+            {% endfor %}
+
+            <button type="button" onclick="submitQuiz()">Submit</button>
+        </form>
+        <p id="result" style="display: none;"></p>
+    </div>
+
+    <script>
+        function submitQuiz() {
+            // Add logic to grade answers and calculate results
+            // For simplicity, let's assume the correct answers are stored in a dictionary
+            var correctAnswers = {'q1': 'HyperText Transfer Protocol', 'q2': 'Domain Name System', 'q3': 'Python', 'q4': 'Monitor and control incoming and outgoing network traffic', 'q5': 'Identify and locate a device on a network'};
+            var userAnswers = {};
+
+            // Extract user answers from the form
+            var questions = {{ quiz_data | tojson }};
+            questions.forEach(function(question) {
+                userAnswers[question['id']] = document.forms['quizForm'][question['id']].value;
+            });
+
+            // Calculate score
+            var score = Object.keys(userAnswers).filter(function(key) {
+                return userAnswers[key] === correctAnswers[key];
+            }).length;
+
+            // Display result
+            var resultElement = document.getElementById('result');
+            resultElement.textContent = 'You scored ' + score + ' out of ' + Object.keys(correctAnswers).length;
+            resultElement.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
